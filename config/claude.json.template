@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "context7": {
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp"
+    },
+    "reader": {
+      "command": "node",
+      "args": [
+        "$HOME/.claude/mcp-servers/reader-mcp/dist/index.js"
+      ]
+    }
+  },
+  "autoUpdates": false,
+  "teammateMode": "tmux"
+}

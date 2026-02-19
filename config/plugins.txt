@@ -1,0 +1,11 @@
+disabled agent-sdk-dev@claude-plugins-official
+enabled code-review@claude-plugins-official
+enabled commit-commands@claude-plugins-official
+enabled feature-dev@claude-plugins-official
+enabled frontend-design@claude-plugins-official
+enabled gopls-lsp@claude-plugins-official
+disabled hookify@claude-plugins-official
+disabled pr-review-toolkit@claude-plugins-official
+enabled pyright-lsp@claude-plugins-official
+disabled ralph-loop@claude-plugins-official
+enabled superpowers@claude-plugins-official
