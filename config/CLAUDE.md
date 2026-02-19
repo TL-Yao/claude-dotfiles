@@ -122,3 +122,26 @@ Requests come from Cloudflare's infrastructure instead of Anthropic's servers, b
 - Testing conventions (e.g., "table-driven tests, test files use `_test.go` suffix with package name `_test`")
 
 Only record conventions that are **consistently followed** in the existing code, not aspirational rules.
+
+### 5. Sync Dotfiles Repo
+
+**When**: After modifying any of the following on this machine:
+- `~/.claude/CLAUDE.md` (global instructions)
+- `~/.claude/settings.json` (plugin toggles, permissions)
+- `~/.claude/agents/*.md` (agent definitions)
+- `~/.claude/skills/*/SKILL.md` (skill definitions)
+- `~/.claude/mcp-servers/*/src/**` (custom MCP server source code)
+- `~/.claude.json` top-level `mcpServers` config
+
+**What to do**:
+1. Run `~/claudeProjects/claude-dotfiles/export.sh` to export changes
+2. Review the diff: `cd ~/claudeProjects/claude-dotfiles && git diff`
+3. Commit with descriptive message: `git add -A && git commit -m "chore: <what changed>"`
+4. Remind the user to `git push` if they want to sync to other machines
+
+**When NOT to sync**:
+- Temporary experimental changes the user hasn't confirmed they want to keep
+- Changes to auto-generated files (caches, tokens, project metadata)
+- If the user says "don't sync this" or "just trying something"
+
+**Judgment criteria**: Sync when a config change is intentional and permanent.
