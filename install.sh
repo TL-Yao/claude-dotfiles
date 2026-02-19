@@ -180,11 +180,11 @@ if ! command -v claude >/dev/null 2>&1; then
 fi
 echo "  1. Run 'claude login' to authenticate (if not already logged in)"
 echo "  2. Install marketplace plugins (only those not yet installed):"
-while IFS=' ' read -r status plugin; do
-  [ "$status" = "enabled" ] && echo "     claude plugin install $plugin"
+while IFS=' ' read -r status plugin || [ -n "$status" ]; do
+  [ "$status" = "enabled" ] && echo "     claude plugin install $plugin" || true
 done < "$REPO_DIR/config/plugins.txt"
 echo ""
 echo "  3. (Optional) Disabled plugins you may want later:"
-while IFS=' ' read -r status plugin; do
-  [ "$status" = "disabled" ] && echo "     $plugin"
+while IFS=' ' read -r status plugin || [ -n "$status" ]; do
+  [ "$status" = "disabled" ] && echo "     $plugin" || true
 done < "$REPO_DIR/config/plugins.txt"
