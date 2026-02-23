@@ -9,6 +9,27 @@
       "args": [
         "$HOME/.claude/mcp-servers/reader-mcp/dist/index.js"
       ]
+    },
+    "markdown2pdf": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "markdown2pdf-mcp@latest"
+      ]
+    },
+    "mcp-mermaid": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-mermaid"
+      ]
+    },
+    "excel": {
+      "command": "uvx",
+      "args": [
+        "excel-mcp-server",
+        "stdio"
+      ]
     }
   },
   "autoUpdates": false,

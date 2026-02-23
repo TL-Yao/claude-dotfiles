@@ -53,6 +53,16 @@ When unsure which mode, ask.
 - Frontend: JS/React (recommend specific framework based on project needs)
 - Future possible: C++, Rust
 
+## MCP Tool Preferences
+
+When the task involves these capabilities, MUST use the corresponding MCP tool instead of alternative approaches:
+
+- **Excel files** (.xlsx/.xls): Use `excel` MCP tools (NOT Python/pandas via Bash)
+- **Diagrams/flowcharts**: Use `mcp-mermaid` to render diagrams as images (NOT just output Mermaid code text)
+- **PDF generation**: Use `markdown2pdf` MCP to convert content to PDF (NOT just output Markdown)
+
+These MCP tools produce actual files. Always prefer them over text-only alternatives.
+
 ## Commit Convention
 
 Format: `<type>: <short description>`
