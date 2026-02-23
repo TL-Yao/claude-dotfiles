@@ -39,6 +39,14 @@ When unsure which mode, ask.
 - Do not add unrequested features, refactors, or "improvements"
 - Do not add comments or type annotations to unchanged code
 
+## UI/UX Development
+
+**MANDATORY**: When building or modifying any UI/UX — web pages, components, layouts, styling, or frontend interfaces — MUST invoke the `/frontend-design` skill before writing any code. This applies to both POC and Full Development modes.
+
+**Triggers**: creating pages, building components, designing layouts, styling, responsive design, UI refactoring, adding visual elements, form design, dashboard building, landing pages.
+
+**No exceptions**: Even "just add a button" or "change the color" should go through the skill when it involves design decisions.
+
 ## Tech Stack Reference
 
 - Backend primary: Go, secondary: Python
