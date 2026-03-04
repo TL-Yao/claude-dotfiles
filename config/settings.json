@@ -16,7 +16,10 @@
     "frontend-design@claude-plugins-official": true,
     "pr-review-toolkit@claude-plugins-official": false,
     "ralph-loop@claude-plugins-official": false,
-    "superpowers@claude-plugins-official": true
+    "superpowers@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true,
+    "rust-analyzer-lsp@claude-plugins-official": true,
+    "modern-go-guidelines@go-modern-guidelines": true
   },
   "skipDangerousModePermissionPrompt": true
 }

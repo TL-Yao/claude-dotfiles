@@ -63,6 +63,20 @@ When the task involves these capabilities, MUST use the corresponding MCP tool i
 
 These MCP tools produce actual files. Always prefer them over text-only alternatives.
 
+## Code Quality Skills
+
+When writing or reviewing code in these languages, invoke the corresponding skill:
+
+- **Go**: `/use-modern-go` (JetBrains, auto-detects go.mod version)
+- **React/JSX**: `react-expert` skill (React 19, Server Components, TanStack Query v5)
+- **Rust**: `rust-engineer` skill (ownership, async, unsafe, error handling)
+- **TypeScript/JS**: `typescript-pro` skill (advanced types, patterns, config)
+- **Python**: `python-pro` skill (async, type system, testing patterns)
+- **Code Review**: `code-review-skill` (multi-language review guidelines + CSS)
+
+LSP plugins (typescript-lsp, rust-analyzer-lsp, gopls-lsp, pyright-lsp) provide
+real-time diagnostics automatically — no manual invocation needed.
+
 ## Commit Convention
 
 Format: `<type>: <short description>`
