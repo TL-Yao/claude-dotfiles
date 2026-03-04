@@ -11,11 +11,18 @@ echo "  config/CLAUDE.md"
 cp ~/.claude/settings.json "$REPO_DIR/config/"
 echo "  config/settings.json"
 
-# Tier 2: Agents + Skills
+# Tier 2: Agents
 cp ~/.claude/agents/*.md "$REPO_DIR/agents/"
 echo "  agents/*.md"
-cp ~/.claude/skills/team-up/SKILL.md "$REPO_DIR/skills/team-up/"
-echo "  skills/team-up/SKILL.md"
+
+# Tier 2b: Skills — export all skill directories (exclude .git, .DS_Store)
+for skill_dir in ~/.claude/skills/*/; do
+  skill_name=$(basename "$skill_dir")
+  mkdir -p "$REPO_DIR/skills/$skill_name"
+  rsync -a --delete --exclude .git --exclude .DS_Store \
+    "$skill_dir" "$REPO_DIR/skills/$skill_name/"
+done
+echo "  skills/ ($(ls -d ~/.claude/skills/*/ 2>/dev/null | wc -l | tr -d ' ') skills)"
 
 # Tier 3: reader-mcp source (exclude build artifacts)
 rsync -a --delete --exclude node_modules --exclude dist --exclude .DS_Store \
@@ -38,7 +45,14 @@ print(s)
 " > "$REPO_DIR/config/claude.json.template"
 echo "  config/claude.json.template"
 
-# Tier 5: Plugin manifest from settings.json
+# Tier 5: known_marketplaces.json (plugin marketplace registrations)
+if [ -f ~/.claude/plugins/known_marketplaces.json ]; then
+  mkdir -p "$REPO_DIR/config"
+  cp ~/.claude/plugins/known_marketplaces.json "$REPO_DIR/config/known_marketplaces.json"
+  echo "  config/known_marketplaces.json"
+fi
+
+# Tier 6: Plugin manifest from settings.json
 python3 -c "
 import json, os
 with open(os.path.expanduser('~/.claude/settings.json')) as f:

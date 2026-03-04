@@ -1,0 +1,26 @@
+{
+  "claude-plugins-official": {
+    "source": {
+      "source": "github",
+      "repo": "anthropics/claude-plugins-official"
+    },
+    "installLocation": "/Users/tongleyao/.claude/plugins/marketplaces/claude-plugins-official",
+    "lastUpdated": "2026-03-04T12:23:28.589Z"
+  },
+  "superpowers-marketplace": {
+    "source": {
+      "source": "github",
+      "repo": "obra/superpowers-marketplace"
+    },
+    "installLocation": "/Users/tongleyao/.claude/plugins/marketplaces/superpowers-marketplace",
+    "lastUpdated": "2026-02-01T18:37:30.550Z"
+  },
+  "go-modern-guidelines": {
+    "source": {
+      "source": "github",
+      "repo": "JetBrains/go-modern-guidelines"
+    },
+    "installLocation": "/Users/tongleyao/.claude/plugins/marketplaces/go-modern-guidelines",
+    "lastUpdated": "2026-03-04T12:55:00.000Z"
+  }
+}
