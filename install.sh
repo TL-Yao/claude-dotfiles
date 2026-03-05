@@ -180,18 +180,18 @@ print('  .claude.json: merged mcpServers')
 "
 fi
 
-# 8. known_marketplaces.json — merge marketplace registrations
+# 8. known_marketplaces.json — merge marketplace registrations (resolve $HOME placeholder)
 if [ -f "$REPO_DIR/config/known_marketplaces.json" ]; then
+  MARKETPLACES_TEMPLATE=$(sed "s|\\\$HOME|$HOME|g" "$REPO_DIR/config/known_marketplaces.json")
   if [ "$FORCE" = true ] || [ ! -f "$CLAUDE_DIR/plugins/known_marketplaces.json" ]; then
-    cp "$REPO_DIR/config/known_marketplaces.json" "$CLAUDE_DIR/plugins/known_marketplaces.json"
+    echo "$MARKETPLACES_TEMPLATE" > "$CLAUDE_DIR/plugins/known_marketplaces.json"
     echo "  known_marketplaces.json: installed ($([ "$FORCE" = true ] && echo "overwritten" || echo "new"))"
   else
     python3 -c "
 import json
 with open('$CLAUDE_DIR/plugins/known_marketplaces.json') as f:
     existing = json.load(f)
-with open('$REPO_DIR/config/known_marketplaces.json') as f:
-    incoming = json.load(f)
+incoming = json.loads('''$MARKETPLACES_TEMPLATE''')
 added = 0
 for key, val in incoming.items():
     if key not in existing:

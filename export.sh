@@ -45,10 +45,18 @@ print(s)
 " > "$REPO_DIR/config/claude.json.template"
 echo "  config/claude.json.template"
 
-# Tier 5: known_marketplaces.json (plugin marketplace registrations)
+# Tier 5: known_marketplaces.json (plugin marketplace registrations, replace $HOME with placeholder)
 if [ -f ~/.claude/plugins/known_marketplaces.json ]; then
   mkdir -p "$REPO_DIR/config"
-  cp ~/.claude/plugins/known_marketplaces.json "$REPO_DIR/config/known_marketplaces.json"
+  python3 -c "
+import json, os
+with open(os.path.expanduser('~/.claude/plugins/known_marketplaces.json')) as f:
+    data = json.load(f)
+home = os.path.expanduser('~')
+s = json.dumps(data, indent=2)
+s = s.replace(home, '\$HOME')
+print(s)
+" > "$REPO_DIR/config/known_marketplaces.json"
   echo "  config/known_marketplaces.json"
 fi
 
