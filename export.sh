@@ -15,7 +15,7 @@ echo "  config/settings.json"
 cp ~/.claude/agents/*.md "$REPO_DIR/agents/"
 echo "  agents/*.md"
 
-# Tier 2b: Skills — export all skill directories (exclude .git, .DS_Store)
+# Tier 3: Skills — export all skill directories (exclude .git, .DS_Store)
 for skill_dir in ~/.claude/skills/*/; do
   skill_name=$(basename "$skill_dir")
   mkdir -p "$REPO_DIR/skills/$skill_name"
@@ -24,12 +24,12 @@ for skill_dir in ~/.claude/skills/*/; do
 done
 echo "  skills/ ($(ls -d ~/.claude/skills/*/ 2>/dev/null | wc -l | tr -d ' ') skills)"
 
-# Tier 3: reader-mcp source (exclude build artifacts)
+# Tier 4: reader-mcp source (exclude build artifacts)
 rsync -a --delete --exclude node_modules --exclude dist --exclude .DS_Store \
   ~/.claude/mcp-servers/reader-mcp/ "$REPO_DIR/mcp-servers/reader-mcp/"
 echo "  mcp-servers/reader-mcp/ (source only)"
 
-# Tier 4: Extract portable fields from ~/.claude.json, replace $HOME with placeholder
+# Tier 5: Extract portable fields from ~/.claude.json, replace $HOME with placeholder
 python3 -c "
 import json, os
 with open(os.path.expanduser('~/.claude.json')) as f:
@@ -45,22 +45,7 @@ print(s)
 " > "$REPO_DIR/config/claude.json.template"
 echo "  config/claude.json.template"
 
-# Tier 5: known_marketplaces.json (plugin marketplace registrations, replace $HOME with placeholder)
-if [ -f ~/.claude/plugins/known_marketplaces.json ]; then
-  mkdir -p "$REPO_DIR/config"
-  python3 -c "
-import json, os
-with open(os.path.expanduser('~/.claude/plugins/known_marketplaces.json')) as f:
-    data = json.load(f)
-home = os.path.expanduser('~')
-s = json.dumps(data, indent=2)
-s = s.replace(home, '\$HOME')
-print(s)
-" > "$REPO_DIR/config/known_marketplaces.json"
-  echo "  config/known_marketplaces.json"
-fi
-
-# Tier 6: Plugin manifest from settings.json
+# Tier 6: Plugin manifest from settings.json (for install.sh summary)
 python3 -c "
 import json, os
 with open(os.path.expanduser('~/.claude/settings.json')) as f:
