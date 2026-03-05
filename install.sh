@@ -218,10 +218,12 @@ if ! command -v vtsls >/dev/null 2>&1; then
   # Try user-local prefix to avoid sudo
   NPM_PREFIX="${HOME}/.npm-global"
   mkdir -p "$NPM_PREFIX"
-  npm config set prefix "$NPM_PREFIX" 2>/dev/null || true
-  npm install -g @vtsls/language-server typescript 2>/dev/null && \
-    echo "  vtsls: installed to $NPM_PREFIX/bin/" || \
+  npm config set prefix "$NPM_PREFIX" || true
+  if npm install -g @vtsls/language-server typescript; then
+    echo "  vtsls: installed to $NPM_PREFIX/bin/"
+  else
     echo "  vtsls: FAILED — run 'npm install -g @vtsls/language-server typescript' manually"
+  fi
   # Ensure PATH includes npm-global
   if ! echo "$PATH" | grep -q "$NPM_PREFIX/bin"; then
     SHELL_RC="$HOME/.zshrc"
@@ -239,9 +241,11 @@ fi
 if ! command -v rust-analyzer >/dev/null 2>&1; then
   if command -v rustup >/dev/null 2>&1; then
     echo "  Installing rust-analyzer via rustup..."
-    rustup component add rust-analyzer 2>/dev/null && \
-      echo "  rust-analyzer: installed" || \
+    if rustup component add rust-analyzer; then
+      echo "  rust-analyzer: installed"
+    else
       echo "  rust-analyzer: FAILED — run 'rustup component add rust-analyzer' manually"
+    fi
   else
     echo "  rust-analyzer: SKIPPED — rustup not installed"
     echo "    Install Rust: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
@@ -263,7 +267,7 @@ fi
 # Excel MCP needs uv/uvx
 if ! command -v uvx >/dev/null 2>&1; then
   echo "  Installing uv (for Excel MCP server)..."
-  if curl -LsSf https://astral.sh/uv/install.sh 2>/dev/null | sh 2>/dev/null; then
+  if curl -LsSf https://astral.sh/uv/install.sh | sh; then
     echo "  uv/uvx: installed"
   else
     echo "  uv/uvx: FAILED — run 'curl -LsSf https://astral.sh/uv/install.sh | sh' manually"
