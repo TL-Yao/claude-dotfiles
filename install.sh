@@ -129,8 +129,11 @@ rsync -a --exclude node_modules --exclude dist \
   "$REPO_DIR/mcp-servers/reader-mcp/" "$CLAUDE_DIR/mcp-servers/reader-mcp/"
 if [ "$FORCE" = true ] || [ ! -f "$CLAUDE_DIR/mcp-servers/reader-mcp/dist/index.js" ]; then
   echo "  reader-mcp: building..."
-  (cd "$CLAUDE_DIR/mcp-servers/reader-mcp" && npm install && npm run build)
-  echo "  reader-mcp: build complete"
+  if (cd "$CLAUDE_DIR/mcp-servers/reader-mcp" && npm install && npm run build) 2>&1; then
+    echo "  reader-mcp: build complete"
+  else
+    echo "  reader-mcp: BUILD FAILED — run manually: cd ~/.claude/mcp-servers/reader-mcp && npm install && npm run build"
+  fi
 else
   echo "  reader-mcp: source updated, dist/ exists (skip build)"
 fi
@@ -260,9 +263,11 @@ fi
 # Excel MCP needs uv/uvx
 if ! command -v uvx >/dev/null 2>&1; then
   echo "  Installing uv (for Excel MCP server)..."
-  curl -LsSf https://astral.sh/uv/install.sh 2>/dev/null | sh 2>/dev/null && \
-    echo "  uv/uvx: installed" || \
+  if curl -LsSf https://astral.sh/uv/install.sh 2>/dev/null | sh 2>/dev/null; then
+    echo "  uv/uvx: installed"
+  else
     echo "  uv/uvx: FAILED — run 'curl -LsSf https://astral.sh/uv/install.sh | sh' manually"
+  fi
 else
   echo "  uv/uvx: already installed ($(which uvx))"
 fi
