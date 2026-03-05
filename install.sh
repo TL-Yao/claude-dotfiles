@@ -152,16 +152,19 @@ else
 fi
 
 # 7. ~/.claude.json — merge mcpServers
-TEMPLATE=$(sed "s|\\\$HOME|$HOME|g" "$REPO_DIR/config/claude.json.template")
+TEMPLATE_FILE=$(mktemp)
+sed "s|\\\$HOME|$HOME|g" "$REPO_DIR/config/claude.json.template" > "$TEMPLATE_FILE"
 if [ "$FORCE" = true ] || [ ! -f "$HOME/.claude.json" ]; then
   if [ -f "$HOME/.claude.json" ] && [ "$FORCE" = true ]; then
     # Force mode: merge into existing (don't destroy auto-generated fields)
-    echo "$TEMPLATE" | python3 << 'PYEOF' - "$HOME/.claude.json"
+    python3 << 'PYEOF' - "$TEMPLATE_FILE" "$HOME/.claude.json"
 import json, sys
 
-target_path = sys.argv[1]
-incoming = json.load(sys.stdin)
+template_path = sys.argv[1]
+target_path = sys.argv[2]
 
+with open(template_path) as f:
+    incoming = json.load(f)
 with open(target_path) as f:
     existing = json.load(f)
 for key in incoming.get("mcpServers", {}):
@@ -175,16 +178,18 @@ with open(target_path, "w") as f:
 print("  .claude.json: force-merged mcpServers + settings")
 PYEOF
   else
-    echo "$TEMPLATE" > "$HOME/.claude.json"
+    cp "$TEMPLATE_FILE" "$HOME/.claude.json"
     echo "  .claude.json: installed (new)"
   fi
 else
-  echo "$TEMPLATE" | python3 << 'PYEOF' - "$HOME/.claude.json"
+  python3 << 'PYEOF' - "$TEMPLATE_FILE" "$HOME/.claude.json"
 import json, sys
 
-target_path = sys.argv[1]
-incoming = json.load(sys.stdin)
+template_path = sys.argv[1]
+target_path = sys.argv[2]
 
+with open(template_path) as f:
+    incoming = json.load(f)
 with open(target_path) as f:
     existing = json.load(f)
 for key in incoming.get("mcpServers", {}):
@@ -198,6 +203,7 @@ with open(target_path, "w") as f:
 print("  .claude.json: merged mcpServers")
 PYEOF
 fi
+rm -f "$TEMPLATE_FILE"
 
 # 8. Binary dependencies for LSP plugins
 echo ""
