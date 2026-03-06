@@ -30,6 +30,15 @@
         "excel-mcp-server",
         "stdio"
       ]
+    },
+    "telegram": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "$HOME/.claude/mcp-servers/telegram-mcp",
+        "run",
+        "main.py"
+      ]
     }
   },
   "autoUpdates": false,
