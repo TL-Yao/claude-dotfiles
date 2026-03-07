@@ -39,8 +39,9 @@
         "matcher": "",
         "hooks": [
           {
-            "type": "command",
-            "command": "~/.claude/hooks/session-end-checkpoint.sh"
+            "type": "prompt",
+            "prompt": "Analyze $ARGUMENTS. If stop_hook_active is true, return {\"ok\": true}. Otherwise return {\"ok\": false, \"reason\": \"Self-evolution check: review if any learnings, memory updates, or dotfiles sync are needed for this session.\"}. JSON only.",
+            "timeout": 30
           }
         ]
       }
