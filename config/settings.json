@@ -39,9 +39,8 @@
         "matcher": "",
         "hooks": [
           {
-            "type": "prompt",
-            "prompt": "You are a session-end checkpoint. Analyze last_assistant_message in $ARGUMENTS.\n\nReturn your decision as JSON with this exact format:\n{\"decision\": \"approve\"} — to allow Claude to stop\n{\"decision\": \"block\", \"reason\": \"...\", \"systemMessage\": \"...\"} — to make Claude continue working\n\nRules:\n- Default to {\"decision\": \"approve\"} unless you see CLEAR evidence that files were actually modified (Edit/Write tools used, git commits made, config changed) AND the work is documentable (bug fixes, feature additions, config changes — NOT just reading files or answering questions).\n- If last_assistant_message contains \"session checkpoint complete\" or \"self-evolution check\", ALWAYS return {\"decision\": \"approve\"}.\n- When in doubt, approve. Most sessions should pass through.\n\nOnly if files were clearly modified AND work is documentable AND no checkpoint marker exists, return:\n{\"decision\": \"block\", \"reason\": \"Session involved code/config changes that may need documentation.\", \"systemMessage\": \"Before stopping: review your conversation for any Self-Evolution habits (learnings, dotfiles sync, memory updates) that apply but weren't completed. When done, end your message with 'Session checkpoint complete'.\"}\n\nJSON only.",
-            "timeout": 30
+            "type": "command",
+            "command": "~/.claude/hooks/session-end-checkpoint.sh"
           }
         ]
       }
