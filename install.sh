@@ -97,9 +97,15 @@ with open(f"{repo_dir}/config/settings.json") as f:
 for plugin, enabled in incoming.get("enabledPlugins", {}).items():
     if plugin not in existing.get("enabledPlugins", {}):
         existing.setdefault("enabledPlugins", {})[plugin] = enabled
+# Fields that should always be overwritten from repo (not just added-if-missing)
+OVERWRITE_FIELDS = {"hooks", "permissions", "env", "skipDangerousModePermissionPrompt"}
 for key, val in incoming.items():
-    if key != "enabledPlugins" and key not in existing:
-        existing[key] = val
+    if key == "enabledPlugins":
+        continue
+    if key in OVERWRITE_FIELDS:
+        existing[key] = val  # always take repo version
+    elif key not in existing:
+        existing[key] = val  # add new fields only
 with open(f"{claude_dir}/settings.json", "w") as f:
     json.dump(existing, f, indent=2)
     f.write("\n")
