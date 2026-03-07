@@ -99,27 +99,20 @@ Requests come from Cloudflare's infrastructure instead of Anthropic's servers, b
 
 **IMPORTANT**: These behaviors should happen naturally during development, not as afterthoughts. Judge whether something is worth recording — only record what would save significant time if encountered again.
 
-### 1. Record Takeaways (→ Project CLAUDE.md)
+### 1. Record Learnings (two-tier routing)
 
-**When**: After solving a non-trivial bug, debugging session, exploration, or discovering a project-specific pattern.
+**Project-specific** (-> project CLAUDE.md under `## Takeaways`):
+- Project-unique gotchas, architecture decisions, environment config
+- Criteria: wouldn't apply in a different project
+- Format: `### [YYYY-MM-DD] - [Category]` with Problem/Solution/Prevention (3 lines max)
 
-**What to record** (append under a `## Takeaways` section in the project's CLAUDE.md):
-- Error symptoms + root causes + fixes (so the same bug isn't debugged twice)
-- Environment/tooling gotchas with concrete workarounds
-- Codebase conventions discovered (naming, structure, error handling patterns)
-- Failed approaches and WHY they didn't work (anti-patterns)
-- Architecture decisions and their rationale
-
-**Format**:
-```
-### [YYYY-MM-DD] - [Category]
-**Problem**: [What went wrong or what was discovered]
-**Solution/Insight**: [What fixed it or what was learned]
-**Prevention**: [How to avoid in future, if applicable]
-```
+**Cross-project** (-> `~/.claude/learnings/LEARNINGS.md`):
+- Tool usage tips, language idioms, general debugging experience
+- Criteria: would encounter this in other projects too
+- Follow the Write-time Protocol (Rule 6) when adding entries
 
 **Do NOT record**: trivial fixes, obvious things, or information already in the codebase.
-**Maintenance**: When adding a new takeaway, scan existing ones — merge duplicates, remove entries that are now obvious or outdated, keep each entry to 3 lines max.
+**Maintenance**: When adding a new entry, scan existing ones — merge duplicates, remove outdated entries.
 
 ### 2. Update README.md
 
@@ -163,6 +156,8 @@ Only record conventions that are **consistently followed** in the existing code,
 - `~/.claude/agents/*.md` (agent definitions)
 - `~/.claude/skills/*/SKILL.md` (skill definitions)
 - `~/.claude/mcp-servers/*/src/**` (custom MCP server source code)
+- `~/.claude/learnings/LEARNINGS.md` (global learnings)
+- `~/.claude/hooks/*` (hook scripts)
 - `~/.claude.json` top-level `mcpServers` config
 
 **What to do**:
@@ -177,3 +172,28 @@ Only record conventions that are **consistently followed** in the existing code,
 - If the user says "don't sync this" or "just trying something"
 
 **Judgment criteria**: Sync when a config change is intentional and permanent.
+
+### 6. Global Learning Write-time Protocol
+
+**When**: About to write a new entry to `~/.claude/learnings/LEARNINGS.md`.
+
+**Steps**:
+1. Read the file, grep for similar existing entries (by Summary keywords)
+2. If similar entry exists: update Occurrences +1, append current project to Projects list
+3. If Occurrences reaches 3: distill into 1-2 line rule, append to `~/.claude/CLAUDE.md` under `## Promoted Rules`, mark original as `promoted`
+4. If no similar entry: create new with `Occurrences: 1`, `Projects: <current>`
+5. If `last-cleanup` date > 30 days ago: also run cleanup (delete `archived` entries >30d old, merge duplicates, update date)
+6. Trigger dotfiles sync (Rule 5)
+
+**Entry format**:
+```
+## [YYYY-MM-DD] category | status
+
+**Summary**: one-line description
+**Details**: what happened, what's correct
+**Action**: specific fix or rule
+**Occurrences**: N
+**Projects**: project-a, project-b
+```
+
+**Status values**: `active` | `promoted` | `archived`

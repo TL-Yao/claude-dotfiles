@@ -56,5 +56,15 @@ for plugin, enabled in sorted(data.get('enabledPlugins', {}).items()):
 " > "$REPO_DIR/config/plugins.txt"
 echo "  config/plugins.txt"
 
+# Tier 7: Global learnings
+mkdir -p "$REPO_DIR/learnings"
+cp ~/.claude/learnings/LEARNINGS.md "$REPO_DIR/learnings/" 2>/dev/null || true
+echo "  learnings/LEARNINGS.md"
+
+# Tier 8: Hooks
+mkdir -p "$REPO_DIR/hooks"
+cp ~/.claude/hooks/*.sh "$REPO_DIR/hooks/" 2>/dev/null || true
+echo "  hooks/ ($(ls ~/.claude/hooks/*.sh 2>/dev/null | wc -l | tr -d ' ') scripts)"
+
 echo ""
 echo "Export complete. Review with 'git diff', then commit."

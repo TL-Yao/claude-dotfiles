@@ -28,7 +28,7 @@ case "${SHELL:-/bin/bash}" in
 esac
 
 # 1. Create directory structure
-mkdir -p "$CLAUDE_DIR"/{agents,skills,plugins,mcp-servers/reader-mcp}
+mkdir -p "$CLAUDE_DIR"/{agents,skills,plugins,mcp-servers/reader-mcp,learnings,hooks}
 
 # 2. CLAUDE.md — section-aware merge
 if [ "$FORCE" = true ] || [ ! -f "$CLAUDE_DIR/CLAUDE.md" ]; then
@@ -205,7 +205,67 @@ PYEOF
 fi
 rm -f "$TEMPLATE_FILE"
 
-# 8. Binary dependencies for LSP plugins
+# 8. Learnings — copy if missing, append-only merge if exists
+if [ "$FORCE" = true ] || [ ! -f "$CLAUDE_DIR/learnings/LEARNINGS.md" ]; then
+  cp "$REPO_DIR/learnings/LEARNINGS.md" "$CLAUDE_DIR/learnings/" 2>/dev/null || true
+  echo "  learnings: installed"
+else
+  python3 << 'PYEOF' - "$CLAUDE_DIR" "$REPO_DIR"
+import sys, re
+
+claude_dir = sys.argv[1]
+repo_dir = sys.argv[2]
+
+local_path = f"{claude_dir}/learnings/LEARNINGS.md"
+repo_path = f"{repo_dir}/learnings/LEARNINGS.md"
+
+with open(local_path) as f:
+    local = f.read()
+with open(repo_path) as f:
+    repo = f.read()
+
+# Extract entries by their ## heading + Summary line
+def extract_entries(text):
+    entries = {}
+    for match in re.finditer(r'(## \d{4}-\d{2}-\d{2} .+?\n(?:(?!## \d{4}).)*)', text, re.DOTALL):
+        block = match.group(1)
+        summary_match = re.search(r'\*\*Summary\*\*: (.+)', block)
+        if summary_match:
+            entries[summary_match.group(1).strip()] = block
+    return entries
+
+local_entries = extract_entries(local)
+repo_entries = extract_entries(repo)
+
+new_entries = []
+for summary, block in repo_entries.items():
+    if summary not in local_entries:
+        new_entries.append(block)
+
+if new_entries:
+    with open(local_path, 'a') as f:
+        for entry in new_entries:
+            f.write('\n' + entry)
+    print(f"  learnings: merged {len(new_entries)} new entry(ies)")
+else:
+    print("  learnings: already up to date")
+PYEOF
+fi
+
+# 9. Hooks — copy all hook scripts
+HOOKS_ADDED=0
+for hook_script in "$REPO_DIR/hooks/"*.sh; do
+  [ -f "$hook_script" ] || continue
+  name=$(basename "$hook_script")
+  if [ "$FORCE" = true ] || [ ! -f "$CLAUDE_DIR/hooks/$name" ]; then
+    cp "$hook_script" "$CLAUDE_DIR/hooks/"
+    chmod +x "$CLAUDE_DIR/hooks/$name"
+    HOOKS_ADDED=$((HOOKS_ADDED + 1))
+  fi
+done
+echo "  hooks: added $HOOKS_ADDED new"
+
+# 10. Binary dependencies for LSP plugins
 echo ""
 echo "Checking binary dependencies..."
 
@@ -270,7 +330,7 @@ else
   echo "  uv/uvx: already installed ($(command -v uvx))"
 fi
 
-# 9. Summary + smart verification
+# 11. Summary + smart verification
 echo ""
 echo "=== Installation complete ($([ "$FORCE" = true ] && echo "force" || echo "merge") mode) ==="
 echo ""

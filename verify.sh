@@ -99,6 +99,20 @@ else
   PENDING_COMMANDS+=("cd ~/.claude/mcp-servers/reader-mcp && npm install && npm run build")
 fi
 
+# 6. Learnings directory
+if [ -f "$CLAUDE_DIR/learnings/LEARNINGS.md" ]; then
+  pass "Learnings: initialized"
+else
+  fail "Learnings: not initialized"
+fi
+
+# 7. Hooks
+if [ -f "$CLAUDE_DIR/hooks/session-end-learnings.sh" ]; then
+  pass "Hook: session-end-learnings"
+else
+  fail "Hook: session-end-learnings"
+fi
+
 # Summary
 echo ""
 TOTAL=$((PASS + FAIL))
