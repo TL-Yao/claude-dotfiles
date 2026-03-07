@@ -12,5 +12,10 @@ if [ "$STOP_ACTIVE" = "true" ]; then
   exit 0
 fi
 
-echo "Self-evolution check: review if any learnings, memory updates, or dotfiles sync are needed. If nothing to do, say so briefly." >&2
+cat >&2 << 'MSG'
+Session-end checkpoint:
+1. Self-evolution: any learnings, memory updates, or dotfiles sync needed?
+2. Commitments check: review CLAUDE.md and memory files for any agreed-upon actions (updates, sync, deploy, tests, code quality checks, etc.) that apply to this session but were not completed.
+If nothing to do, say so briefly.
+MSG
 exit 2
