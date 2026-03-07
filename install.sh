@@ -270,28 +270,10 @@ else
   echo "  uv/uvx: already installed ($(command -v uvx))"
 fi
 
-# 9. Summary
+# 9. Summary + smart verification
 echo ""
 echo "=== Installation complete ($([ "$FORCE" = true ] && echo "force" || echo "merge") mode) ==="
 echo ""
-echo "Next steps:"
-if ! command -v claude >/dev/null 2>&1; then
-  echo "  0. Install Claude Code: npm install -g @anthropic-ai/claude-code"
-fi
-echo "  1. Run 'claude login' to authenticate (if not already logged in)"
-echo "  2. Start a Claude Code session, then install plugins:"
+"$REPO_DIR/verify.sh" || true
 echo ""
-if [ -f "$REPO_DIR/config/plugins.txt" ]; then
-  while IFS=' ' read -r status plugin || [ -n "$status" ]; do
-    [ "$status" = "enabled" ] && echo "     /plugin install $plugin" || true
-  done < "$REPO_DIR/config/plugins.txt"
-fi
-echo ""
-echo "  3. (Optional) Disabled plugins you may want later:"
-if [ -f "$REPO_DIR/config/plugins.txt" ]; then
-  while IFS=' ' read -r status plugin || [ -n "$status" ]; do
-    [ "$status" = "disabled" ] && echo "     $plugin" || true
-  done < "$REPO_DIR/config/plugins.txt"
-fi
-echo ""
-echo "  4. Restart Claude Code to activate all changes"
+echo "Restart Claude Code to activate all changes."
