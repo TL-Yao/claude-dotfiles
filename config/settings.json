@@ -39,8 +39,9 @@
         "matcher": "",
         "hooks": [
           {
-            "type": "command",
-            "command": "~/.claude/hooks/session-end-learnings.sh"
+            "type": "prompt",
+            "prompt": "You are a lightweight session-end checkpoint. Review $ARGUMENTS (especially last_assistant_message).\n\nIf last_assistant_message contains phrases like \"self-evolution check\" or \"session checkpoint complete\" or similar indicators that Claude already performed its end-of-session review, return:\n{\"ok\": true}\n\nIf this session involved real work (code changes, config modifications, problem-solving, or the user asked Claude to remember/do something), return:\n{\"ok\": false, \"reason\": \"Before stopping, review your conversation history, local memory files, and global config (~/.claude/CLAUDE.md) for any commitments or Self-Evolution habits (learnings, dotfiles sync) that apply to this session but weren't completed. When done, end your message with 'Session checkpoint complete'.\"}\n\nIf this was just a simple chat, question, or information lookup with no actionable work, return:\n{\"ok\": true}\n\nJSON only.",
+            "timeout": 30
           }
         ]
       }
