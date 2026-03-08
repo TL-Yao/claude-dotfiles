@@ -24,3 +24,11 @@ Format: [date] category | status
 **Occurrences**: 1
 **Projects**: skillPlayground
 
+## 2026-03-09 security | active
+
+**Summary**: dotfiles/config 导出脚本必须自动清洗 secrets，不能依赖人工检查
+**Details**: export.sh 将 ~/.claude.json 导出为 template 时，直接复制了 Apify API token 到 Git 仓库，触发 GitHub Secret Scanning 拦截 push。修复：用 git-filter-repo --replace-text 重写历史彻底移除 token，export.sh 加 regex 自动清洗已知 secret 模式（apify_api_*, API_KEY, SECRET_KEY, ACCESS_TOKEN, TELEGRAM_*TOKEN）。泄露的 token 必须立即吊销轮换。
+**Action**: 任何导出配置到 Git 的脚本，必须内置 secret 清洗步骤，绝不依赖人工审查。新增 MCP/服务集成时检查是否引入了新的 token 模式，及时更新清洗 regex。
+**Occurrences**: 1
+**Projects**: claude-dotfiles
+

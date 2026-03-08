@@ -77,6 +77,21 @@ When writing or reviewing code in these languages, invoke the corresponding skil
 LSP plugins (typescript-lsp, rust-analyzer-lsp, gopls-lsp, pyright-lsp) provide
 real-time diagnostics automatically — no manual invocation needed.
 
+## Secret Protection (MANDATORY)
+
+**NEVER commit secrets** (API tokens, passwords, private keys) to any Git repository. This is a hard rule with zero exceptions.
+
+Before every `git add` or `git commit`:
+- Scan staged files for patterns: `*_TOKEN`, `*_KEY`, `*_SECRET`, `apify_api_*`, `sk-*`, `ghp_*`, `gho_*`, bearer tokens, passwords
+- If a file contains secrets, replace with placeholders (`YOUR_*_HERE`) or use environment variables before committing
+- **Config export scripts** (like dotfiles export.sh) MUST have built-in secret sanitization — never rely on manual review
+
+If you discover a secret already committed:
+1. **Immediately alert the user** — this is a security incident
+2. Use `git filter-repo --replace-text` to purge from all history
+3. Force push the cleaned history
+4. Remind user to **rotate/revoke the leaked credential**
+
 ## Commit Convention
 
 Format: `<type>: <short description>`
