@@ -39,6 +39,16 @@
         "run",
         "main.py"
       ]
+    },
+    "apify": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@apify/actors-mcp-server@latest"
+      ],
+      "env": {
+        "APIFY_TOKEN": "YOUR_APIFY_TOKEN_HERE"
+      }
     }
   },
   "autoUpdates": false,

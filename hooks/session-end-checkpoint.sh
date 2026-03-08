@@ -6,6 +6,10 @@ set -uo pipefail
 
 INPUT=$(cat)
 
+# DEBUG: log hook input JSON to diagnose teammate Stop events
+echo "$INPUT" | jq '.' >> /tmp/claude-stop-hook-debug.log 2>/dev/null
+echo "---" >> /tmp/claude-stop-hook-debug.log
+
 # Check stop_hook_active — if true, Claude is already continuing from a previous block
 STOP_ACTIVE=$(echo "$INPUT" | jq -r '.stop_hook_active // false' 2>/dev/null)
 if [ "$STOP_ACTIVE" = "true" ]; then
