@@ -16,3 +16,11 @@ Format: [date] category | status
 **Occurrences**: 1
 **Projects**: skillPlayground
 
+## 2026-03-09 web-scraping | active
+
+**Summary**: Web scraping 分两层：下载（突破防护）vs 提取（HTML→正文），选工具时要区分
+**Details**: trafilatura (5400+ stars) 火爆不是因为反爬能力，而是 HTML 正文提取质量业界领先（双算法 jusText+readability 融合、元数据提取、多格式输出）。它对 Cloudflare 零处理——无 JS 执行、无 TLS 指纹、无 challenge 检测，遇到防护会静默返回垃圾内容。大部分网站无需反爬，所以用户觉得"好用"。真正需要突破防护的场景应组合使用：反爬工具（reader-mcp/Playwright）负责下载 + 提取工具（trafilatura）负责清洗。
+**Action**: 选爬虫工具时先问"瓶颈在下载还是提取"——下载受阻选 reader-mcp/Playwright，提取质量差选 trafilatura，两者可组合。
+**Occurrences**: 1
+**Projects**: skillPlayground
+
