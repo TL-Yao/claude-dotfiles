@@ -29,9 +29,9 @@ rsync -a --delete --exclude node_modules --exclude dist --exclude .DS_Store \
   ~/.claude/mcp-servers/reader-mcp/ "$REPO_DIR/mcp-servers/reader-mcp/"
 echo "  mcp-servers/reader-mcp/ (source only)"
 
-# Tier 5: Extract portable fields from ~/.claude.json, replace $HOME with placeholder
+# Tier 5: Extract portable fields from ~/.claude.json, replace $HOME and sanitize secrets
 python3 -c "
-import json, os
+import json, os, re
 with open(os.path.expanduser('~/.claude.json')) as f:
     data = json.load(f)
 home = os.path.expanduser('~')
@@ -41,6 +41,10 @@ for key in ['mcpServers', 'autoUpdates', 'teammateMode']:
         template[key] = data[key]
 s = json.dumps(template, indent=2)
 s = s.replace(home, '\$HOME')
+# Sanitize known secret patterns (API tokens, keys)
+s = re.sub(r'apify_api_[A-Za-z0-9]+', 'YOUR_APIFY_TOKEN_HERE', s)
+s = re.sub(r'\"(APIFY_TOKEN|API_KEY|SECRET_KEY|ACCESS_TOKEN|TELEGRAM_[A-Z_]*TOKEN)\":\s*\"(?!YOUR_)[^\"]+\"',
+           lambda m: '\"' + m.group(1) + '\": \"YOUR_' + m.group(1) + '_HERE\"', s)
 print(s)
 " > "$REPO_DIR/config/claude.json.template"
 echo "  config/claude.json.template"
