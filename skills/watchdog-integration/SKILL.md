@@ -1,6 +1,6 @@
 ---
 name: watchdog-integration
-description: Use when integrating WatchDog analytics into a project — adding request tracking middleware, pageview tracking, SQL schema setup, or deploying the watchdog-api dashboard. Triggers include "add analytics", "add monitoring", "track requests", "integrate watchdog", "pageview tracking", "analytics middleware", "usage analytics".
+description: Use when integrating WatchDog analytics into a project — adding request tracking middleware, pageview tracking, SQL schema setup, deploying or redeploying watchdog-api. Triggers include "add analytics", "add monitoring", "track requests", "integrate watchdog", "pageview tracking", "analytics middleware", "usage analytics", "deploy watchdog", "redeploy watchdog-api", "restart watchdog".
 ---
 
 > **Sync rule:** This skill reflects the watchdog project at `/Users/tongleyao/claudeProjects/watchDog/`.
@@ -370,6 +370,27 @@ go build -o watchdog-api .
 | `--retention-days` | `WATCHDOG_RETENTION_DAYS` | `90` | Auto-delete data older than N days |
 
 Priority: flag > env > default. Retention cleanup runs on startup + every 24h.
+
+### Update & Redeploy (Code Changed)
+
+When watchdog-api code is updated, cross-compile and deploy to the target server:
+
+```bash
+# 1. Cross-compile for Linux
+cd /path/to/watchdog/api
+GOOS=linux GOARCH=amd64 go build -o watchdog-api .
+
+# 2. Upload binary to server
+scp watchdog-api <ssh-alias>:<deploy-path>/watchdog-api
+
+# 3. Restart service
+ssh <ssh-alias> "sudo systemctl restart watchdog-api"
+
+# 4. Verify
+ssh <ssh-alias> "sudo systemctl status watchdog-api"
+```
+
+If code hasn't changed (just need a restart): only step 3.
 
 ### Systemd Service
 
