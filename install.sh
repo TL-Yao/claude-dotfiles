@@ -211,51 +211,12 @@ PYEOF
 fi
 rm -f "$TEMPLATE_FILE"
 
-# 8. Learnings — copy if missing, append-only merge if exists
-if [ "$FORCE" = true ] || [ ! -f "$CLAUDE_DIR/learnings/LEARNINGS.md" ]; then
-  cp "$REPO_DIR/learnings/LEARNINGS.md" "$CLAUDE_DIR/learnings/" 2>/dev/null || true
-  echo "  learnings: installed"
+# 8. Learnings — always overwrite with repo version (export captures full state)
+if [ -f "$REPO_DIR/learnings/LEARNINGS.md" ]; then
+  cp "$REPO_DIR/learnings/LEARNINGS.md" "$CLAUDE_DIR/learnings/"
+  echo "  learnings: synced (repo → local)"
 else
-  python3 << 'PYEOF' - "$CLAUDE_DIR" "$REPO_DIR"
-import sys, re
-
-claude_dir = sys.argv[1]
-repo_dir = sys.argv[2]
-
-local_path = f"{claude_dir}/learnings/LEARNINGS.md"
-repo_path = f"{repo_dir}/learnings/LEARNINGS.md"
-
-with open(local_path) as f:
-    local = f.read()
-with open(repo_path) as f:
-    repo = f.read()
-
-# Extract entries by their ## heading + Summary line
-def extract_entries(text):
-    entries = {}
-    for match in re.finditer(r'(## \d{4}-\d{2}-\d{2} .+?\n(?:(?!## \d{4}).)*)', text, re.DOTALL):
-        block = match.group(1)
-        summary_match = re.search(r'\*\*Summary\*\*: (.+)', block)
-        if summary_match:
-            entries[summary_match.group(1).strip()] = block
-    return entries
-
-local_entries = extract_entries(local)
-repo_entries = extract_entries(repo)
-
-new_entries = []
-for summary, block in repo_entries.items():
-    if summary not in local_entries:
-        new_entries.append(block)
-
-if new_entries:
-    with open(local_path, 'a') as f:
-        for entry in new_entries:
-            f.write('\n' + entry)
-    print(f"  learnings: merged {len(new_entries)} new entry(ies)")
-else:
-    print("  learnings: already up to date")
-PYEOF
+  echo "  learnings: no file in repo, skipped"
 fi
 
 # 9. Hooks — copy all hook scripts
