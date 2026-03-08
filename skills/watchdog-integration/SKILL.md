@@ -417,16 +417,28 @@ All under `/api/v1/`. Common params: `from`, `to` (YYYY-MM-DD), `tenant` (option
 
 | Endpoint | Description |
 |----------|-------------|
-| `GET /overview` | DAU, MAU, requests, pageviews, avg response, error rate, dropped events |
+| `GET /overview` | DAU, MAU, requests, pageviews, avg/P95/P99 response, system_error_count/rate, auth_failure_count, client_error_count, availability, dropped events |
 | `GET /trends/dau` | Daily active users over time |
-| `GET /trends/errors` | 4xx/5xx counts and error rate per day |
+| `GET /trends/errors` | count_5xx, count_auth (401/403), count_client (other 4xx), error_rate (5xx only) per day |
+| `GET /trends/response-time` | Daily avg_ms + p95_ms response time trend |
 | `GET /rankings/pages?limit=20` | Top pages by views |
-| `GET /rankings/apis?limit=20` | Top APIs by calls (includes P95) |
-| `GET /rankings/errors?limit=20` | Top errors by count |
-| `GET /activity/tenants` | Per-tenant DAU, requests, pageviews, error rate |
+| `GET /rankings/apis?limit=20` | Top APIs by calls (includes P95, P99, 5xx-only error_count/rate) |
+| `GET /rankings/errors?limit=20&category=` | Top errors by count. Category filter: `system` (5xx), `auth` (401/403), `client` (other 4xx), or omit for all. Response includes `category` field. |
+| `GET /performance/endpoints?limit=20` | Endpoints ranked by P95 desc (min 5 calls). Returns avg_ms, p95_ms, p99_ms. |
+| `GET /activity/tenants` | Per-tenant DAU, requests, pageviews, error_rate (5xx only) |
 | `GET /activity/users?limit=20` | Per-user activity |
 | `GET /distribution/hourly` | Requests + pageviews by hour (0-23) |
 | `GET /meta/tenants` | Distinct tenant list for filter dropdowns |
+
+### Error Classification Model
+
+WatchDog classifies errors into three categories for health monitoring:
+
+| Category | Status Codes | Health Impact |
+|----------|-------------|---------------|
+| **System** | 500-599 | Primary health indicator — `error_rate` and `availability` are based on 5xx only |
+| **Auth** | 401, 403 | Tracked separately — normal auth flow, does not affect health score |
+| **Client** | Other 4xx | Informational only |
 
 ## 7. Dashboard Connection
 
