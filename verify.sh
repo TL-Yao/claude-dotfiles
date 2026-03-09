@@ -107,10 +107,10 @@ else
 fi
 
 # 7. Hooks
-if [ -f "$CLAUDE_DIR/hooks/session-end-learnings.sh" ]; then
-  pass "Hook: session-end-learnings"
+if [ -f "$CLAUDE_DIR/hooks/session-end-checkpoint.sh" ]; then
+  pass "Hook: session-end-checkpoint"
 else
-  fail "Hook: session-end-learnings"
+  fail "Hook: session-end-checkpoint"
 fi
 
 # Summary
