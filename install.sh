@@ -113,6 +113,61 @@ print("  settings.json: merged")
 PYEOF
 fi
 
+# 3.5. Marketplaces — clone repos listed in extraKnownMarketplaces
+MARKETPLACE_DIR="$CLAUDE_DIR/plugins/marketplaces"
+mkdir -p "$MARKETPLACE_DIR"
+if [ -f "$REPO_DIR/config/settings.json" ]; then
+  MP_DATA=$(python3 -c "
+import json
+with open('$REPO_DIR/config/settings.json') as f:
+    data = json.load(f)
+for name, info in data.get('extraKnownMarketplaces', {}).items():
+    repo = info.get('source', {}).get('repo', '')
+    print(f'{name} {repo}')
+" 2>/dev/null) || true
+  MP_ADDED=0
+  MP_SKIPPED=0
+  while IFS=' ' read -r mp_name mp_repo || [ -n "${mp_name:-}" ]; do
+    [ -z "${mp_name:-}" ] && continue
+    if [ -d "$MARKETPLACE_DIR/$mp_name/.git" ]; then
+      MP_SKIPPED=$((MP_SKIPPED + 1))
+    elif [ -n "$mp_repo" ]; then
+      echo "  Cloning marketplace: $mp_name (https://github.com/$mp_repo)..."
+      if git clone --depth 1 "https://github.com/$mp_repo.git" "$MARKETPLACE_DIR/$mp_name" >/dev/null 2>&1; then
+        # Register in known_marketplaces.json
+        python3 << PYEOF - "$mp_name" "$mp_repo" "$MARKETPLACE_DIR/$mp_name"
+import json, sys, datetime
+
+name = sys.argv[1]
+repo = sys.argv[2]
+install_path = sys.argv[3]
+km_path = "$CLAUDE_DIR/plugins/known_marketplaces.json"
+
+try:
+    with open(km_path) as f:
+        data = json.load(f)
+except (FileNotFoundError, json.JSONDecodeError):
+    data = {}
+
+data[name] = {
+    "source": {"source": "github", "repo": repo},
+    "installLocation": install_path,
+    "lastUpdated": datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z")
+}
+
+with open(km_path, "w") as f:
+    json.dump(data, f, indent=2)
+    f.write("\n")
+PYEOF
+        MP_ADDED=$((MP_ADDED + 1))
+      else
+        echo "  marketplace $mp_name: CLONE FAILED — run '/marketplace add $mp_repo' in Claude Code manually"
+      fi
+    fi
+  done <<< "$MP_DATA"
+  echo "  marketplaces: added $MP_ADDED new, skipped $MP_SKIPPED existing"
+fi
+
 # 4. Agents — only add missing files
 ADDED=0
 SKIPPED=0
