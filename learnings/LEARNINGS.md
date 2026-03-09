@@ -32,3 +32,19 @@ Format: [date] category | status
 **Occurrences**: 1
 **Projects**: claude-dotfiles
 
+## 2026-03-09 apify-proxy | active
+
+**Summary**: Cloudflare Turnstile 检测 Playwright CDP `Runtime.Enable`，stealth/proxy 无效；用 Camoufox 或纯 httpx 绕过
+**Details**: Cloudflare 不看 UA/指纹/IP，而是检测 Playwright 的 CDP 协议命令（`Runtime.Enable`）。所以 stealth plugin、locale/timezone 伪装、residential proxy 全部无效。解决方案：(1) Camoufox（反检测 Firefox，C++ 层 patch，Apify 有官方 actor `apify/camoufox-scraper`，~$5-10）；(2) 纯 httpx（如果数据在 SSR `__NEXT_DATA__` 里，根本不需要浏览器）。EdgeProp 实测：本地 httpx HTTP 200，SSR 包含几乎所有数据。
+**Action**: 遇到 Cloudflare 站点先检查数据是否在 SSR（httpx 直接拿），否则用 Camoufox（非 Playwright）。不要浪费时间调 Playwright stealth。
+**Occurrences**: 2
+**Projects**: rentSift
+
+## 2026-03-09 git | active
+
+**Summary**: `git filter-repo` 会将工作目录文件 revert 回历史版本，未提交的修改会丢失
+**Details**: 在有未提交修改的情况下运行 `git filter-repo --invert-paths`，历史清理成功但工作目录被重置为最后一次 commit 的状态，所有本地修改丢失。必须先 commit 或 stash 修改，再跑 filter-repo。
+**Action**: 运行 `git filter-repo` 前，先 commit 或 stash 所有工作目录变更。
+**Occurrences**: 1
+**Projects**: rentSift
+

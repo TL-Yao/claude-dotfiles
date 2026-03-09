@@ -12,3 +12,4 @@ enabled rust-analyzer-lsp@claude-plugins-official
 enabled skill-creator@claude-plugins-official
 enabled superpowers@claude-plugins-official
 enabled typescript-lsp@claude-plugins-official
+enabled visual-explainer@visual-explainer-marketplace
