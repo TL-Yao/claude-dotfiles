@@ -26,25 +26,36 @@ You are now the **team leader**. Based on the mode argument, assemble and coordi
 
 ### Mode: "dev" (开发模式)
 
-Create a team and spawn these 5 teammates:
+Create a team and spawn these teammates. **ui-designer is conditional** — only spawn it when the task involves frontend/UI work.
 
-| Name | Agent Type | Role |
-|------|-----------|------|
-| designer-architect | designer-architect | System design, architecture, implementation plans |
-| frontend-dev | frontend-dev | React/JS frontend implementation only |
-| backend-dev | backend-dev | Go/Python backend implementation only |
-| code-reviewer | code-reviewer | Code review, quality enforcement, documentation |
-| qa-engineer | qa-engineer | Integration tests, BDD tests, E2E verification |
+| Name | Agent Type | Role | Conditional? |
+|------|-----------|------|-------------|
+| designer-architect | designer-architect | System design, architecture, implementation plans | Always |
+| ui-designer | ui-designer | Visual design, aesthetics, design previews | Only for UI tasks |
+| frontend-dev | frontend-dev | React/JS frontend implementation only | Always |
+| backend-dev | backend-dev | Go/Python backend implementation only | Always |
+| code-reviewer | code-reviewer | Code review, quality enforcement, documentation | Always |
+| qa-engineer | qa-engineer | Integration tests, BDD tests, E2E verification | Always |
+
+**When to spawn ui-designer**: Any task that involves creating or modifying UI — new pages, component design, layout changes, visual redesign, styling updates. Skip for pure backend tasks, data pipeline work, or infrastructure changes.
 
 **Dev workflow**:
 1. User describes requirements → you break into tasks
 2. designer-architect creates the detailed plan (writes to `docs/plans/<feature>.md`)
-3. You assign implementation tasks to developers, telling them to read the plan file for details
-4. frontend-dev and backend-dev implement in parallel (separate files!)
-5. code-reviewer reviews completed code, sends feedback
-6. qa-engineer tests the integrated feature
-7. code-reviewer updates documentation and cleans up plan files
-8. Report completion to user, wait for next task
+3. **If UI work involved**: ui-designer creates visual design previews (standalone HTML with 2-3 options). User picks a direction. This happens BEFORE frontend-dev writes code.
+4. You assign implementation tasks to developers, telling them to read the plan file for details. If ui-designer produced a design, tell frontend-dev to follow it.
+5. frontend-dev and backend-dev implement in parallel (separate files!)
+6. code-reviewer reviews completed code, sends feedback
+7. qa-engineer tests the integrated feature
+8. code-reviewer updates documentation and cleans up plan files
+9. Report completion to user, wait for next task
+
+**Design iteration flow** (for UI tasks):
+- ui-designer shows options → user picks ("I like B", "too cramped", "colors too cold")
+- ui-designer refines based on feedback → shows again if needed
+- Once user approves → frontend-dev implements the approved design
+- ui-designer records the decision in `docs/design-preferences.md`
+- The user is NOT a designer — they communicate through selection and gut reactions, not design specifications
 
 ### Mode: "explore" (探索模式)
 
