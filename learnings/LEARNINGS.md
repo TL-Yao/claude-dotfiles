@@ -48,3 +48,43 @@ Format: [date] category | status
 **Occurrences**: 1
 **Projects**: rentSift
 
+## 2026-03-09 db-schema-migration | active
+
+**Summary**: DB 初始化函数不要用 DROP TABLE — schema 变更用 CREATE IF NOT EXISTS + ALTER TABLE ADD COLUMN
+**Details**: `get_db()` 里为了配合新 schema，写了 `DROP TABLE IF EXISTS` + `CREATE TABLE`。第一次运行没问题，但爬虫中途崩溃后重启，又触发了 DROP，导致已爬的 829 条数据全部丢失。正确做法是 `CREATE TABLE IF NOT EXISTS` + 用 `PRAGMA table_info` 检测缺失列再 `ALTER TABLE ADD COLUMN`。
+**Action**: DB 初始化永远不要 DROP TABLE。Schema 迁移用 additive migration（只加列）。破坏性 schema 变更单独写迁移脚本，手动执行。
+**Occurrences**: 1
+**Projects**: rentSift
+
+## 2026-03-11 team-coordination | active
+
+**Summary**: Team lead must NOT take over teammates' work — idle notifications are normal, not signs of being stuck
+**Details**: Designer-architect sent idle notifications while working on a revision. Team lead mistakenly interpreted repeated idles as "stuck" and rewrote the entire design spec, overwriting the teammate's file. User rightfully called this out as a major mistake. Idle notifications are normal turn intervals between message processing. Team lead's role is to coordinate and delegate, never to implement teammates' tasks.
+**Action**: (1) Never take over a teammate's assigned work. (2) Idle notifications ≠ stuck. Be patient. (3) If genuinely concerned, send ONE ping and wait. (4) If teammate truly unresponsive after reasonable time, discuss with user before taking action.
+**Occurrences**: 1
+**Projects**: rentSift
+
+## 2026-03-11 mapbox-gl | active
+
+**Summary**: Mapbox GL `<Layer filter={undefined}>` crashes — always pass a valid filter array or omit the prop
+**Details**: react-map-gl's `<Layer>` passes the `filter` prop directly to `map.addLayer()`. Mapbox GL expects `filter` to be an array (expression) or absent — `undefined` triggers `"array expected, undefined found"` error and silently prevents the layer from rendering. Building polygons disappeared because `typeFilter` returned `undefined` when both types were selected.
+**Action**: Never pass `filter={undefined}`. Use a "match all" expression like `['has', 'type']` or conditionally spread `{...(filter ? { filter } : {})}`.
+**Occurrences**: 1
+**Projects**: rentSift
+
+## 2026-03-12 remote-server-management | active
+
+**Summary**: Claude Code 远程服务器管理三条路线：原生 SSH、classfang MCP（推荐）、bvisible MCP（重度）
+**Details**: (1) Claude Code Desktop 原生 SSH：SSH 进远端直接跑 Claude Code，全能力但需远端装 Node+CC，适合远程开发；(2) `classfang/ssh-mcp-server`（65 stars，MCP 官方收录，NPX 直接跑，凭证隔离+命令黑白名单，命令执行+文件传输）—— 推荐作为全局通用方案 `claude mcp add -s user ssh-mcp-server -- npx -y ssh-mcp-server`；(3) `bvisible/mcp-ssh-manager`（18 stars，37 工具/6 组，服务器分组批量执行/DB 备份/SSH 隧道/sudo，context 优化减 92% token）—— 适合重度 DevOps。简单一次性任务 `ssh` one-shot 也够用。
+**Action**: 跨项目通用方案装 `classfang/ssh-mcp-server`（`-s user` 全局）。重度运维加装 `bvisible/mcp-ssh-manager`。一次性任务直接 `ssh` one-shot。
+**Occurrences**: 1
+**Projects**: freelandGate
+
+## 2026-03-09 background-tasks | active
+
+**Summary**: Claude Code 后台任务在 cooling pause / sleep 期间会被回收，长时间爬虫用 `nohup` 启动
+**Details**: 用 Bash tool 的 `run_in_background` 启动的爬虫进程，在 `asyncio.sleep(120-300)` cooling pause 期间被系统 kill（exit 143 = SIGTERM）。进程没有错误日志，数据无丢失但中断了。改用 `nohup python3 script.py > /dev/null 2>&1 &` 启动后不再被回收。
+**Action**: 超过 30 分钟的后台任务，用 `nohup` 而非 Claude Code 的 `run_in_background`。确保脚本有 progress 文件支持断点续跑。
+**Occurrences**: 1
+**Projects**: rentSift
+

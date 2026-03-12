@@ -49,6 +49,15 @@
       "env": {
         "APIFY_TOKEN": "YOUR_APIFY_TOKEN_HERE"
       }
+    },
+    "ssh-mcp-server": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "ssh-mcp-server"
+      ],
+      "env": {}
     }
   },
   "autoUpdates": false,
