@@ -64,8 +64,7 @@
       "args": [
         "-y",
         "chrome-devtools-mcp@latest",
-        "--autoConnect",
-        "--slim"
+        "--autoConnect"
       ]
     }
   },
