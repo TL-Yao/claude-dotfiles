@@ -8,6 +8,16 @@ Format: [date] category | status
 
 ---
 
+## 2026-03-22 bash | active
+
+**Summary**: Background subshell variable assignments don't propagate to parent shell
+**Details**: `var=$(cmd) &` runs in a subshell; parent never sees the assignment. Variables stay empty/N/A after `wait`.
+**Action**: Write output to temp files instead: `cmd > "$tmp/result" &`, then `var=$(cat "$tmp/result")` after `wait`
+**Occurrences**: 1
+**Projects**: freelandGate
+
+---
+
 ## 2026-03-08 hooks | active
 
 **Summary**: Claude Code prompt hook `{ok: false}` does not grant Claude a new turn — use command hook exit code 2 instead
@@ -79,6 +89,14 @@ Format: [date] category | status
 **Action**: 跨项目通用方案装 `classfang/ssh-mcp-server`（`-s user` 全局）。重度运维加装 `bvisible/mcp-ssh-manager`。一次性任务直接 `ssh` one-shot。
 **Occurrences**: 1
 **Projects**: freelandGate
+
+## 2026-03-18 psycopg-transactions | active
+
+**Summary**: `pg.rollback()` inside a try/except rolls back ALL uncommitted work in the transaction, not just the failing statement
+**Details**: Pattern: run UPDATE A, then try UPDATE B (which fails), catch and `pg.rollback()`, then fallback UPDATE A again. The rollback wipes UPDATE A too. If the fallback uses a value from UPDATE A (e.g. `COALESCE(data_source, 'unknown')` where data_source was just set), it reads NULL. Result: silent data corruption — everything gets the fallback default instead of the real value.
+**Action**: Commit UPDATEs that must persist BEFORE entering a try/except that calls `pg.rollback()`. In psycopg v3 (autocommit=False default), `pg.rollback()` is always transaction-wide.
+**Occurrences**: 1
+**Projects**: rentSift
 
 ## 2026-03-09 background-tasks | active
 
