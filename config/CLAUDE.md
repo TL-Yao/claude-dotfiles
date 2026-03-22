@@ -61,6 +61,7 @@ When the task involves these capabilities, MUST use the corresponding MCP tool i
 - **Diagrams/flowcharts**: Use `mcp-mermaid` to render diagrams as images (NOT just output Mermaid code text)
 - **PDF generation**: Use `markdown2pdf` MCP to convert content to PDF (NOT just output Markdown)
 - **Remote server SSH**: Use `ssh-mcp-server` MCP tools (classfang/ssh-mcp-server, globally installed). If target machine hasn't been configured in ssh-mcp-server yet, use traditional `ssh` one-shot via Bash to set it up first, then switch to MCP tools.
+- **Browser automation**: Use `agent-browser` skill (Bash CLI, default choice for most tasks). Use `chrome-devtools` MCP when needing real authenticated Chrome session, performance auditing, or network debugging. Use `claude-in-chrome` MCP only for screenshots/GIFs/visual verification.
 
 These MCP tools produce actual files. Always prefer them over text-only alternatives.
 
