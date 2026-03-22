@@ -58,6 +58,15 @@
         "ssh-mcp-server"
       ],
       "env": {}
+    },
+    "chrome-devtools": {
+      "command": "/opt/homebrew/Cellar/node@22/22.22.1_1/bin/npx",
+      "args": [
+        "-y",
+        "chrome-devtools-mcp@latest",
+        "--autoConnect",
+        "--slim"
+      ]
     }
   },
   "autoUpdates": false,
